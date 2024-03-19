@@ -9,6 +9,7 @@ const createUser = async (
   email: string,
   password: string,
   name?: string,
+  lastname?: string,
   role: Role = Role.USER
 ): Promise<User> => {
   if (await getUserByEmail(email)) {
@@ -18,6 +19,7 @@ const createUser = async (
     data: {
       email,
       name,
+      lastname,
       password: await encryptPassword(password),
       role
     }
