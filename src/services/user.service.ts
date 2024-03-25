@@ -47,6 +47,7 @@ const queryUsers = async <Key extends keyof User>(
     'id',
     'email',
     'name',
+    'lastname',
     'password',
     'role',
     'isEmailVerified',
@@ -75,6 +76,7 @@ const getUserById = async <Key extends keyof User>(
     'id',
     'email',
     'name',
+    'lastname',
     'password',
     'role',
     'isEmailVerified',
@@ -82,11 +84,10 @@ const getUserById = async <Key extends keyof User>(
     'updatedAt'
   ] as Key[]
 ): Promise<Pick<User, Key> | null> => {
-  const user = await prisma.user.findUnique({
+  return prisma.user.findUnique({
     where: { id },
     select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {})
-  });
-  return user ? (user as Pick<User, Key> | null) : null;
+  }) as Promise<Pick<User, Key> | null>;
 };
 
 const getUserByEmail = async <Key extends keyof User>(
@@ -95,6 +96,7 @@ const getUserByEmail = async <Key extends keyof User>(
     'id',
     'email',
     'name',
+    'lastname',
     'password',
     'role',
     'isEmailVerified',

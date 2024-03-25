@@ -4,9 +4,10 @@ import { authService, userService, tokenService, emailService } from '../service
 import exclude from '../utils/exclude';
 import { User } from '@prisma/client';
 
+
 const register = catchAsync(async (req, res) => {
-  const { email, password } = req.body;
-  const user = await userService.createUser(email, password);
+  const { email, password, name, lastname } = req.body;
+  const user = await userService.createUser(email, password, name, lastname);
   const userWithoutPassword = exclude(user, ['password', 'createdAt', 'updatedAt']);
   const tokens = await tokenService.generateAuthTokens(user);
   res.status(httpStatus.CREATED).send({ user: userWithoutPassword, tokens });
