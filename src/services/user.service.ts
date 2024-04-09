@@ -3,7 +3,8 @@ import httpStatus from 'http-status';
 import prisma from '../client';
 import ApiError from '../utils/ApiError';
 import { encryptPassword } from '../utils/encryption';
-
+import jwt from 'jsonwebtoken';
+import config from '../config/config';
 
 const createUser = async (
   email: string,
@@ -142,11 +143,30 @@ const deleteUserById = async (userId: number): Promise<User> => {
   return user;
 };
 
+const getUserRole = async ( token: string ): Promise<Role> => {
+  try{
+    const decodedToken = jwt.verify(token, config.jwt.secret) as { userId: number };
+    const userId = decodedToken.userId;
+
+    const user = await getUserById(userId);
+    if (!user) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+    }
+
+    return user.role;
+
+  }catch(error){
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Invalid token');
+  }
+  
+}
+
 export default {
   createUser,
   queryUsers,
   getUserById,
   getUserByEmail,
+  getUserRole,
   updateUserById,
   deleteUserById
 };
