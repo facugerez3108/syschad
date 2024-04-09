@@ -143,10 +143,22 @@ const deleteUserById = async (userId: number): Promise<User> => {
   return user;
 };
 
-const getUserRole = async ( token: string ): Promise<Role> => {
-  try{
-    const decodedToken = jwt.verify(token, config.jwt.secret) as { userId: number };
-    const userId = decodedToken.userId;
+const getUserRole = async (token: string): Promise<Role> => {
+  try {
+    const decodedToken = jwt.verify(token, config.jwt.secret);
+
+    let userId: number;
+    if (typeof decodedToken === 'object' && decodedToken.sub !== undefined) {
+      if (typeof decodedToken.sub === 'string') {
+        userId = parseInt(decodedToken.sub);
+      } else {
+        userId = decodedToken.sub;
+      }
+    } else {
+      throw new Error('Invalid token payload');
+    }
+
+    console.log(userId);
 
     const user = await getUserById(userId);
     if (!user) {
@@ -155,10 +167,9 @@ const getUserRole = async ( token: string ): Promise<Role> => {
 
     return user.role;
 
-  }catch(error){
+  } catch (error) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Invalid token');
   }
-  
 }
 
 export default {
