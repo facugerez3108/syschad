@@ -37,13 +37,6 @@ const createUser = async (
  * @returns {Promise<QueryResult>}
  */
 const queryUsers = async <Key extends keyof User>(
-  filter: object,
-  options: {
-    limit?: number;
-    page?: number;
-    sortBy?: string;
-    sortType?: 'asc' | 'desc';
-  },
   keys: Key[] = [
     'id',
     'email',
@@ -56,16 +49,8 @@ const queryUsers = async <Key extends keyof User>(
     'updatedAt'
   ] as Key[]
 ): Promise<Pick<User, Key>[]> => {
-  const page = options.page ?? 1;
-  const limit = options.limit ?? 10;
-  const sortBy = options.sortBy;
-  const sortType = options.sortType ?? 'desc';
   const users = await prisma.user.findMany({
-    where: filter,
-    select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {}),
-    skip: page * limit,
-    take: limit,
-    orderBy: sortBy ? { [sortBy]: sortType } : undefined
+    select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {})
   });
   return users as Pick<User, Key>[];
 };
