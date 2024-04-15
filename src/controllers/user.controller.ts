@@ -1,5 +1,4 @@
 import httpStatus from "http-status";
-import pick from "../utils/pick";
 import ApiError from "../utils/ApiError";
 import catchAsync from "../utils/catchAsync";
 import { userService } from "../services";
@@ -37,7 +36,8 @@ const updateUser = catchAsync(async (req, res) => {
 });
 
 const deleteUser = catchAsync(async (req, res) => {
-  await userService.deleteUserById(req.params.userId);
+  const userId = parseInt(req.params.userId)
+  await userService.deleteUserById(userId);
   res.status(httpStatus.NO_CONTENT).send();
 });
 
